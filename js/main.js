@@ -19,6 +19,7 @@ elForm.addEventListener("submit", function(evt){
     
     let obj =
     {
+        id: arr.length,
         name: nameInputValue,
         relationship: relationshipInputValue,
         phone: phoneInputValue
@@ -31,46 +32,57 @@ elForm.addEventListener("submit", function(evt){
     
     if(nameInputValue && relationshipInputValue && phoneInputValue !== "" && !repeat){
         arr.push(obj)
-        renderContact()
     }
 
     // arr.push(obj)
-    ulElement.textContent = "";
     elNameInput.value = "";
     elRelationshipInput.value = "";
     elPhoneInput.value = "";
     
-    renderContact()
+    renderContact(arr, ulElement)
 })
 
 
-function renderContact(){
-    for(let i = 0; i < arr.length; i++){
+function renderContact(array, element){
+    ulElement.innerHTML = "";
+
+    for(let i of array){
         let liElement = document.createElement("li")
-        liElement.setAttribute("class", "bg-white p-3 rounded mb-4")
+        liElement.dataset.Id = i.id;
+        liElement.setAttribute("class", "bg-info p-3 rounded mb-4")
         let divElement = document.createElement("div")
         let h4Element = document.createElement("h4")
-        h4Element.textContent = arr[i].name
+        h4Element.textContent = i.name
         let pElement = document.createElement("p")
-        pElement.textContent = arr[i].relationship
+        pElement.textContent = i.relationship
         pElement.setAttribute("class", "text-muted")
         let aElement = document.createElement("a")
-        aElement.textContent = arr[i].phone
+        aElement.textContent = i.phone
         aElement.setAttribute("href", "tel:${arr[i].phone")
         aElement.setAttribute("class", "text-decoration-none")
         let buttonElement = document.createElement("button")
         buttonElement.setAttribute("class", "btn btn-danger d-block mt-2")
         buttonElement.textContent = "Delete"
-        
-        
+        buttonElement.dataset.Id = i.id;
+       
         liElement.appendChild(divElement);
         liElement.appendChild(h4Element)
         liElement.appendChild(pElement)
         liElement.appendChild(aElement)
         liElement.appendChild(buttonElement)
-        ulElement.appendChild(liElement)
+        element.appendChild(liElement);
     }
 }
 
-renderContact()
+renderContact(arr, ulElement);
 
+ulElement.addEventListener("click", (evt) => {
+    
+    if(evt.target.matches(".btn")){
+        let btnId = Number(evt.target.dataset.Id);
+        let itemFind = arr.find(i => i.id == btnId);
+        arr.splice(itemFind, 1);
+        renderContact(arr, ulElement)
+    }
+   
+})
